@@ -1,16 +1,14 @@
-package stage03
-
 import java.io.File
 
 fun main() {
 
     val dictionarySource = File("words.txt")
 
-    val dictionary = mutableListOf<WordST3>()
+    val dictionary = mutableListOf<Word>()
 
     dictionarySource.forEachLine {
         val stringToParse = it.split("|", "^")
-        dictionary.add(WordST3(stringToParse[0], stringToParse[1], stringToParse[2].toInt() ?: 0))
+        dictionary.add(Word(stringToParse[0], stringToParse[1], stringToParse[2].toInt() ?: 0))
     }
 
     while (true) {
@@ -47,4 +45,4 @@ fun main() {
 
 fun getPercents(whole: Int, part: Int) = (100 * part) / whole
 
-data class WordST3(val original: String, val translate: String, var correctAnswersCount: Int = 0)
+data class Word(val original: String, val translate: String, var correctAnswersCount: Int = 0)

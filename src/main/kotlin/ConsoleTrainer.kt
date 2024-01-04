@@ -40,23 +40,22 @@ fun main() {
                 if (unlearnedWords.isEmpty()) {
                     println("У вас нет невыученных слов!")
                     break
-                } else {
-
-                    val answers = unlearnedWords.shuffled().take(POSED_ANSWERS_AMOUNT).toMutableList()
-
-                    val taskWord = answers.random()
-
-                    if (answers.size < POSED_ANSWERS_AMOUNT) {
-                        val extraWrongAnswers = (dictionary - answers)
-                            .shuffled()
-                            .take(POSED_ANSWERS_AMOUNT - answers.size)
-                        answers.addAll(extraWrongAnswers)
-                    }
-
-                    println("Выберете перевод для слова: ${taskWord.original}")
-
-                    answers.forEach { println("${answers.indexOf(it) + 1} ${it.translate}") }
                 }
+
+                val answers = unlearnedWords.shuffled().take(POSED_ANSWERS_AMOUNT).toMutableList()
+
+                val taskWord = answers.random()
+
+                if (answers.size < POSED_ANSWERS_AMOUNT) {
+                    val extraWrongAnswers = (dictionary - answers)
+                        .shuffled()
+                        .take(POSED_ANSWERS_AMOUNT - answers.size)
+                    answers.addAll(extraWrongAnswers)
+                }
+
+                println("Выберете перевод для слова: ${taskWord.original}")
+
+                answers.forEach { println("${answers.indexOf(it) + 1} ${it.translate}") }
 
                 continue
             }
@@ -68,6 +67,7 @@ fun main() {
                     "Выучено $learnedWordsAmount из ${dictionary.size} слов " +
                             "| ${getPercents(dictionary.size, learnedWordsAmount)}%"
                 )
+
                 continue
             }
 

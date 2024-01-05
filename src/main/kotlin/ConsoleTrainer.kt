@@ -3,8 +3,7 @@ import java.io.File
 fun main() {
 
     val dictionarySource = File("words.txt")
-
-    if (!File("words.txt").exists()) createInitialDictionary()
+    if (!dictionarySource.exists()) createInitialDictionary()
 
     val dictionary = mutableListOf<Word>()
 

@@ -2,9 +2,9 @@ import java.io.File
 
 fun main() {
 
-    if (!File("words.txt").exists()) createInitialDictionary()
-
     val dictionarySource = File("words.txt")
+
+    if (!File("words.txt").exists()) createInitialDictionary()
 
     val dictionary = mutableListOf<Word>()
 
@@ -48,9 +48,7 @@ fun main() {
                 }
 
                 println("Выберете перевод для слова: ${taskWord.original}")
-
                 answers.forEach { println("${answers.indexOf(it) + 1} ${it.translate}") }
-
             }
 
             "2" -> {
@@ -67,7 +65,6 @@ fun main() {
             else ->  println("Вам следует выбрать пункт меню.")
         }
 
-        continue
     }
 
 }

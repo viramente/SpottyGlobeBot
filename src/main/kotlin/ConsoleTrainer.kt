@@ -12,17 +12,11 @@ fun main() {
 
         val stringToParse = it.split("|", "^")
 
-        val rightAnswersAmount = try {
-            stringToParse[2].toInt()
-        } catch (e: NumberFormatException) {
-            0
-        }
-
         dictionary.add(
             Word(
                 stringToParse[0],
                 stringToParse[1],
-                rightAnswersAmount
+                stringToParse[2].toIntOrNull() ?: 0
             )
         )
     }
@@ -57,7 +51,6 @@ fun main() {
 
                 answers.forEach { println("${answers.indexOf(it) + 1} ${it.translate}") }
 
-                continue
             }
 
             "2" -> {
@@ -67,15 +60,13 @@ fun main() {
                     "Выучено $learnedWordsAmount из ${dictionary.size} слов " +
                             "| ${getPercents(dictionary.size, learnedWordsAmount)}%"
                 )
-
-                continue
             }
 
             "0" -> break
 
+            else ->  println("Вам следует выбрать пункт меню.")
         }
 
-        println("Вам следует выбрать пункт меню.")
         continue
     }
 

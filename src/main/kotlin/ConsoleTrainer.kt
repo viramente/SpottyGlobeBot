@@ -2,9 +2,9 @@ import java.io.File
 
 fun main() {
 
-    while (true) {
+    val dictionary = createTemporaryDictionary()
 
-        val dictionary = createTemporaryDictionary()
+    while (true) {
 
         println("Меню: 1 – Учить слова, 2 – Статистика, 0 – Выход")
 

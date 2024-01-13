@@ -2,25 +2,10 @@ import java.io.File
 
 fun main() {
 
-    val dictionarySource = File("words.txt")
-    if (!dictionarySource.exists()) createInitialDictionary()
-
-    val dictionary = mutableListOf<Word>()
-
-    dictionarySource.forEachLine {
-
-        val stringToParse = it.split("|", "^")
-
-        dictionary.add(
-            Word(
-                stringToParse[0],
-                stringToParse[1],
-                stringToParse[2].toIntOrNull() ?: 0
-            )
-        )
-    }
+    val dictionary = createTemporaryDictionary()
 
     while (true) {
+
         println("Меню: 1 – Учить слова, 2 – Статистика, 0 – Выход")
 
         val input: String? = readlnOrNull()
@@ -48,6 +33,25 @@ fun main() {
 
                 println("Выберете перевод для слова: ${taskWord.original}")
                 answers.forEach { println("${answers.indexOf(it) + 1} ${it.translate}") }
+                println("0 Меню")
+
+                when (readln().toIntOrNull()) {
+
+                    answers.indexOf(taskWord) + 1 -> {
+                        println("Верно!")
+                        taskWord.correctAnswersCount++
+                        saveDictionary(dictionary)
+                        continue
+                    }
+
+                    0 -> continue
+
+                    else -> {
+                        println("Ответ неверный. Верный ответ: ${taskWord.translate}")
+                        continue
+                    }
+                }
+
             }
 
             "2" -> {
@@ -61,11 +65,13 @@ fun main() {
 
             "0" -> break
 
-            else ->  println("Вам следует выбрать пункт меню.")
+            else -> {
+                println("Вам следует выбрать пункт меню.")
+            }
         }
 
+        continue
     }
-
 }
 
 const val POSED_ANSWERS_AMOUNT = 4
@@ -95,5 +101,32 @@ fun createInitialDictionary() {
         door|дверь^3
    """.trimIndent()
     )
+}
 
+fun saveDictionary(dictionary: MutableList<Word>) {
+    val dictionarySource = File("words.txt")
+    dictionarySource.writeText("")
+    dictionary.forEach { dictionarySource.appendText("${it.original}|${it.translate}^${it.correctAnswersCount}\n") }
+}
+
+fun createTemporaryDictionary(): MutableList<Word> {
+    val dictionarySource = File("words.txt")
+    if (!dictionarySource.exists()) createInitialDictionary()
+
+    val dictionary = mutableListOf<Word>()
+
+    dictionarySource.forEachLine {
+
+        val stringToParse = it.split("|", "^")
+
+        dictionary.add(
+            Word(
+                stringToParse[0],
+                stringToParse[1],
+                stringToParse[2].toIntOrNull() ?: 0
+            )
+        )
+    }
+
+    return dictionary
 }

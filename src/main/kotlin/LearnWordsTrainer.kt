@@ -43,7 +43,7 @@ class LearnWordsTrainer (
         val taskWord = variants.random()
 
         if (variants.size < POSED_ANSWERS_AMOUNT) {
-            val extraWrongAnswers = (dictionary - variants)
+            val extraWrongAnswers = (dictionary - variants.toSet())
                 .shuffled()
                 .take(POSED_ANSWERS_AMOUNT - variants.size)
             variants.addAll(extraWrongAnswers)

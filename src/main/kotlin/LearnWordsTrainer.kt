@@ -38,14 +38,14 @@ class LearnWordsTrainer (
         val unlearnedWords = dictionary
             .filter { it.correctAnswersCount < matchesAmountToBecomeLearned }
         if (unlearnedWords.isEmpty()) return null
-        val variants = unlearnedWords.shuffled().take(POSED_ANSWERS_AMOUNT).toMutableList()
+        val variants = unlearnedWords.shuffled().take(countOfQuestionWords).toMutableList()
 
         val taskWord = variants.random()
 
-        if (variants.size < POSED_ANSWERS_AMOUNT) {
+        if (variants.size < countOfQuestionWords) {
             val extraWrongAnswers = (dictionary - variants.toSet())
                 .shuffled()
-                .take(POSED_ANSWERS_AMOUNT - variants.size)
+                .take(countOfQuestionWords - variants.size)
             variants.addAll(extraWrongAnswers)
         }
 
@@ -86,13 +86,15 @@ class LearnWordsTrainer (
         )
     }
 
-    private fun saveDictionary(dictionary: MutableList<Word>) {
+    private fun saveDictionary(dictionary: List<Word>) {
         val dictionarySource = File("words.txt")
         dictionarySource.writeText("")
-        dictionary.forEach { dictionarySource.appendText("${it.original}|${it.translate}^${it.correctAnswersCount}\n") }
+        dictionary.forEach {
+            dictionarySource.appendText("${it.original}|${it.translate}^${it.correctAnswersCount}\n")
+        }
     }
 
-    private fun loadDictionary(): MutableList<Word> {
+    private fun loadDictionary(): List<Word> {
 
         try {
             val dictionarySource = File("words.txt")

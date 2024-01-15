@@ -1,5 +1,3 @@
-import java.io.File
-
 fun main() {
 
     val trainer = try {
@@ -65,5 +63,3 @@ fun main() {
         continue
     }
 }
-
-const val POSED_ANSWERS_AMOUNT = 4

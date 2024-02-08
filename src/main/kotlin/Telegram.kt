@@ -1,34 +1,38 @@
-import java.net.URI
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
+
 
 fun main(args: Array<String>) {
 
     val botToken = args[0]
     var updateId = 0
 
+    //1618475026
+    //316962688
+    //createMessage(botToken = botToken, chat_id = 316962688, text = "Hello")
+
     while(true) {
         Thread.sleep(2000)
         val updates: String = getUpdates(botToken, updateId)
         println(updates)
 
-        val startUpdateId = updates.lastIndexOf("update_id")
-        val endUpdateId = updates.lastIndexOf(",\n\"message\"")
-        if (startUpdateId == -1 || endUpdateId == -1) continue
-        val updateIdString: String = updates.substring(startUpdateId + 11, endUpdateId)
+        val maskForUpdates: Regex = "\"update_id\":(.+?),".toRegex()
+        val updatesMessageGroup = maskForUpdates.findAll(updates).toList()
 
-//        println(updateIdString)
-        updateId = updateIdString.toInt() + 1
+        if (updatesMessageGroup.isEmpty()) continue
+
+        updateId = updatesMessageGroup.map {it.groupValues.last()}.last().toInt() + 1
+
+        val inputRawMessages: List<String> = updates.split(":[{", "}}").dropLast(1).drop(1)
+
+        val messages: List<Message> = inputRawMessages.map { parseMessage(it) }
+
+        for (eachMessage in messages) {
+            if (eachMessage.text.equals("hello", true)) {
+                createMessage(
+                    botToken,
+                    eachMessage.chat.id!!,
+                    "hello,+${eachMessage.from.username}!")
+            }
+        }
     }
 }
 
-fun getUpdates(botToken: String, updateId: Int): String {
-
-    val urlGetUpdates = "https://api.telegram.org/bot$botToken/getUpdates?offset=$updateId"
-    val client: HttpClient = HttpClient.newBuilder().build()
-    val request: HttpRequest = HttpRequest.newBuilder().uri(URI.create(urlGetUpdates)).build()
-    val response: HttpResponse<String> = client.send(request, HttpResponse.BodyHandlers.ofString())
-
-    return response.body()
-}

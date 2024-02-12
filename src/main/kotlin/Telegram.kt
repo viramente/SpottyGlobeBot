@@ -9,7 +9,7 @@ fun main(args: Array<String>) {
     while (true) {
         Thread.sleep(2000)
 
-        val updates: String = getUpdates(botToken, updateId)
+        val updates: String = TelegramBotService(botToken).getUpdates(updateId)
         println(updates)
 
         val maskForUpdates: Regex = "\"update_id\":(.+?),".toRegex()
@@ -29,10 +29,31 @@ fun main(args: Array<String>) {
 
         for (eachCallback in callbacks) {
 
+            println("eachCallback.massageText = ${eachCallback.massageText}")
+
+            if (eachCallback.massageText.equals(MENU_STRING, true) ||
+                eachCallback.massageText.equals(START_COMMAND, true) ||
+                eachCallback.massageText.equals(START_COMMAND_RUS_UNICODE, true) ||
+                eachCallback.callbackData.equals(MENU_CLICKED) ||
+                eachCallback.callbackData.equals(STATISTICS_CLICKED) // UTF-16
+            ) {
+
+                if (eachCallback.callbackData.equals(STATISTICS_CLICKED)) {
+                    TelegramBotService(botToken).sendMessage(
+                        eachCallback.massageChat.chatId!!,
+                        "Выучено%20${trainer.getStatistics().learnedWordsAmount}%20из%20${trainer.getStatistics().total}" +
+                                "%20слов%20%7C%20${trainer.getStatistics().percent}%25"
+                    )
+                }
+
+                TelegramBotService(botToken).sendMenu(
+                    eachCallback.massageChat.chatId!!
+                )
+            }
+
             if (eachCallback.massageText.equals("hello", true)) {
 
-                sendMessage(
-                    botToken,
+                TelegramBotService(botToken).sendMessage(
                     eachCallback.massageChat.chatId!!,
                     "hello,+${eachCallback.massageFrom.messageUsername}!"
                 )
@@ -48,8 +69,7 @@ fun main(args: Array<String>) {
                     when {
 
                         trainer.checkAnswer(userAnswerId?.minus(1)) -> {
-                            sendMessage(
-                                botToken,
+                            TelegramBotService(botToken).sendMessage(
                                 eachCallback.massageChat.chatId!!,
                                 "Верно!"
                             )
@@ -57,8 +77,7 @@ fun main(args: Array<String>) {
 
                         else -> {
 
-                            sendMessage(
-                                botToken,
+                            TelegramBotService(botToken).sendMessage(
                                 eachCallback.massageChat.chatId!!,
                                 "Неверно!%20${question?.taskWord?.original}%20–%20${question?.taskWord?.translate}"
                             )
@@ -67,47 +86,23 @@ fun main(args: Array<String>) {
                 }
             }
 
-            if (eachCallback.massageText.equals(MENU_STRING, true) ||
-                eachCallback.massageText.equals(START_COMMAND, true) ||
-//                eachCallback.massageText.equals(START_STRING, true) || // НЕ РАБОТАЕТ
-                eachCallback.callbackData.equals(MENU_CLICKED) ||
-                eachCallback.callbackData.equals(STATISTICS_CLICKED)
-            ) {
-
-                if (eachCallback.callbackData.equals(STATISTICS_CLICKED)) {
-                    sendMessage(
-                        botToken,
-                        eachCallback.massageChat.chatId!!,
-                        "Выучено%20${trainer.getStatistics().learnedWordsAmount}%20из%20${trainer.getStatistics().total}" +
-                                "%20слов%20%7C%20${trainer.getStatistics().percent}%25"
-                    )
-                }
-
-                sendMenu(
-                    botToken,
-                    eachCallback.massageChat.chatId!!
-                )
-            }
-
             if (eachCallback.callbackData != null
                 && (eachCallback.callbackData == LEARN_WORDS_CLICKED ||
                         eachCallback.callbackData.startsWith(CALLBACK_DATA_ANSWER_PREFIX))
             ) {
 
+                question = trainer.getNextQuestion()
+
                 if (question != null) {
 
-                    question = trainer.getNextQuestion()
-
-                    checkNextQuestionAndSend(
-                        botToken,
+                    TelegramBotService(botToken).checkNextQuestionAndSend(
                         eachCallback.massageChat.chatId!!,
-                        question!!
+                        question
                     )
 
                 } else {
 
-                    sendMessage(
-                        botToken,
+                    TelegramBotService(botToken).sendMessage(
                         eachCallback.massageChat.chatId!!,
                         NO_UNKNOWN_WORDS
                     )

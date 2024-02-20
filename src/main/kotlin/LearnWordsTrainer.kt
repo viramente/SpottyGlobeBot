@@ -27,7 +27,7 @@ class LearnWordsTrainer (
 
     private val dictionary = loadDictionary()
 
-    fun getStatistic(): Statistics {
+    fun getStatistics(): Statistics {
         val learnedWordsAmount: Int = dictionary.filter { it.correctAnswersCount >= matchesAmountToBecomeLearned }.size
         val total: Int = dictionary.size
         val percent: Int = getPercents(dictionary.size, learnedWordsAmount)
